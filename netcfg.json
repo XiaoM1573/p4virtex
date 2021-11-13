@@ -1,0 +1,34 @@
+{
+  "devices": {
+    "device:s1": {
+      "basic": {
+        "managementAddress": "grpc://192.168.12.16:50001?device_id=1",
+        "driver": "stratum-bmv2",
+        "pipeconf": "org.onosproject.pipelines.basic",
+        "locType": "grid",
+        "gridX": 200,
+        "gridY": 600
+      }
+    },
+    "device:s2": {
+      "basic": {
+        "managementAddress": "grpc://192.168.12.16:50002?device_id=1",
+        "driver": "stratum-bmv2",
+        "pipeconf": "org.onosproject.pipelines.basic",
+        "locType": "grid",
+        "gridX": 600,
+        "gridY": 600
+      }
+    },
+    "device:s3": {
+      "basic": {
+        "managementAddress": "grpc://192.168.12.16:50003?device_id=1",
+        "driver": "stratum-bmv2",
+        "pipeconf": "org.onosproject.pipelines.basic",
+        "locType": "grid",
+        "gridX": 400,
+        "gridY": 400
+      }
+    }
+  }
+}
