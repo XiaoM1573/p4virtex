@@ -8,13 +8,14 @@ import org.onosproject.net.PortNumber;
 import org.onosproject.net.TenantId;
 import org.onosproject.p4virtex.element.*;
 import org.onosproject.p4virtex.service.VirtualNetworkAdminService;
+import org.onosproject.p4virtex.service.VirtualNetworkService;
+import org.onosproject.p4virtex.store.VirtualNetworkStore;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Ref;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -22,21 +23,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Implementation of the virtual network service
  */
-@Component(
-        service = {
-                VirtualNetworkAdminService.class
-        }
-)
+@Component(immediate = true, service = {
+        VirtualNetworkAdminService.class
+})
 public class VirtualNetworkManager implements VirtualNetworkAdminService {
 
     private static final String VIRTUAL_NETWORK_MANAGEMENT_APP_NAME = "org.onosproject.vn-manager";
 
-    private final Logger log = LoggerFactory.getLogger(VirtualNetworkManager.class);
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     private ApplicationId applicationId;
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY)
     private CoreService coreService;
+
+    @Reference(cardinality = ReferenceCardinality.MANDATORY)
+    private VirtualNetworkStore store;
 
     public void activate() {
         log.info("Virtual Network Manager Service is starting ...");
@@ -54,19 +56,17 @@ public class VirtualNetworkManager implements VirtualNetworkAdminService {
 
     @Override
     public void registerTenantId(TenantId tenantId) {
-        checkNotNull(tenantId, "Tenant ID cannot be null");
-
-
+        store.addTenantId(tenantId);
     }
 
     @Override
     public void unregisterTenantId(TenantId tenantId) {
-
+        store.removeTenantId(tenantId);
     }
 
     @Override
     public Set<TenantId> getTenantIds() {
-        return null;
+        return store.getTenantIds();
     }
 
     @Override

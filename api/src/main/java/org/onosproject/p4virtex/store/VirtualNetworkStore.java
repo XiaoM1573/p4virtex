@@ -20,9 +20,9 @@ public interface VirtualNetworkStore {
 
     Set<VirtualNetwork> getNetworks(TenantId tenantId);
 
-    VirtualDevice addDevice();
+    VirtualDevice addDevice(NetworkId networkId, DeviceId deviceId);
 
-    void removeDevice();
+    void removeDevice(NetworkId networkId, DeviceId deviceId);
 
     Set<VirtualDevice> getDevices(NetworkId networkId);
 

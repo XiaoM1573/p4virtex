@@ -1,4 +1,5 @@
 BUNDLES = [
+    "//apps/p4virtex/api:onos-apps-p4virtex-api",
     "//apps/p4virtex/app:onos-apps-p4virtex-app",
 ]
 
