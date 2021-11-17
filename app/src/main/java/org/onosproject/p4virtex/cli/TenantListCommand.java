@@ -13,7 +13,7 @@ import java.util.List;
 
 @Service
 @Command(scope = "onos", name = "vn-tenants",
-        description = "Lists all virtual network of specified tenant")
+        description = "Lists all virtual network of specified tenant. ")
 public class TenantListCommand extends AbstractShellCommand {
     private static final String FORMAT_PRINT_TENANT = "tenantId=%s";
 

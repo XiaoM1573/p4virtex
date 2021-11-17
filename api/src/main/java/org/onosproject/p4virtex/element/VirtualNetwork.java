@@ -4,8 +4,9 @@ import org.onosproject.net.TenantId;
 
 public interface VirtualNetwork {
 
-    NetworkId networkId();
 
     TenantId tenantId();
+
+    NetworkId networkId();
 
 }

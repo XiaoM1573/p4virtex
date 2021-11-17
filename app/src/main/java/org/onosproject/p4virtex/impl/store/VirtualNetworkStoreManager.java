@@ -3,12 +3,11 @@ package org.onosproject.p4virtex.impl.store;
 import com.google.common.collect.ImmutableSet;
 import org.onosproject.core.CoreService;
 import org.onosproject.core.IdGenerator;
-import org.onosproject.net.DeviceId;
-import org.onosproject.net.HostId;
-import org.onosproject.net.TenantId;
+import org.onosproject.net.*;
 import org.onosproject.p4virtex.element.*;
 import org.onosproject.p4virtex.impl.element.DefaultVirtualDevice;
 import org.onosproject.p4virtex.impl.element.DefaultVirtualNetwork;
+import org.onosproject.p4virtex.impl.element.DefaultVirtualPort;
 import org.onosproject.p4virtex.store.VirtualNetworkStore;
 import org.onosproject.store.service.ConsistentMap;
 import org.onosproject.store.service.DistributedSet;
@@ -48,6 +47,12 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     private Map<VirtualDeviceId, VirtualDevice> virtualDeviceIdVirtualDeviceMap;
 
+    // Track virtual ports by network id
+    private Map<NetworkId, Set<VirtualPort>> networkIdVirtualPortSetMap;
+
+    // some error message
+    private static final String MSG_NETWORK_NOT_EXIST = "The virtual network is not existed. ";
+
     // Track virtual network by network id
 //    private ConsistentMap<NetworkId, VirtualNetwork> networkIdVirtualNetworkConsistentMap;
 //    private Map<NetworkId, VirtualNetwork> networkIdVirtualNetworkMap;
@@ -86,6 +91,9 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
         virtualDeviceIdVirtualDeviceMap = new HashMap<>();
 
 
+        networkIdVirtualPortSetMap = new HashMap<>();
+
+
         // init
 //        tenantIdSet = storageService.<TenantId>setBuilder()
 //                .withName("onos-p4virtex-tenantId")
@@ -110,6 +118,7 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     @Override
     public void addTenantId(TenantId tenantId) {
+        checkState(!tenantIdSet.contains(tenantId), "The tenant has been existed.");
         tenantIdSet.add(tenantId);
     }
 
@@ -126,6 +135,7 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     @Override
     public Set<TenantId> getTenantIds() {
+
         return ImmutableSet.copyOf(tenantIdSet);
     }
 
@@ -169,6 +179,11 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
     }
 
     @Override
+    public VirtualNetwork getNetwork(NetworkId networkId) {
+        return networkIdVirtualNetworkMap.get(networkId);
+    }
+
+    @Override
     public VirtualDevice addDevice(NetworkId networkId, DeviceId deviceId) {
         checkState(networkExists(networkId), "The network has not been added. ");
 
@@ -184,9 +199,9 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
         VirtualDeviceId virtualDeviceId = new VirtualDeviceId(networkId, deviceId);
 
         deviceIdSet.add(deviceId);
+        networkIdDeviceIdSetMap.put(networkId, deviceIdSet);
 
         virtualDeviceIdVirtualDeviceMap.put(virtualDeviceId, virtualDevice);
-        networkIdDeviceIdSetMap.put(networkId, deviceIdSet);
 
         return virtualDevice;
     }
@@ -198,7 +213,14 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     @Override
     public Set<VirtualDevice> getDevices(NetworkId networkId) {
-        return null;
+        checkState(networkExists(networkId), MSG_NETWORK_NOT_EXIST);
+        Set<DeviceId> deviceIdSet = networkIdDeviceIdSetMap.get(networkId);
+
+        Set<VirtualDevice> virtualDeviceSet = new HashSet<>();
+        if (deviceIdSet != null) {
+            deviceIdSet.forEach(deviceId -> virtualDeviceSet.add(virtualDeviceIdVirtualDeviceMap.get(new VirtualDeviceId(networkId, deviceId))));
+        }
+        return ImmutableSet.copyOf(virtualDeviceSet);
     }
 
     @Override
@@ -232,9 +254,29 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
     }
 
     @Override
-    public VirtualPort addPort() {
-        return null;
+    public VirtualPort addPort(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, ConnectPoint phyConnectPoint) {
+        checkState(networkExists(networkId), "The virtual network is not existed. ");
+
+        Set<VirtualPort> virtualPortSet = networkIdVirtualPortSetMap.get(networkId);
+
+        if (virtualPortSet == null) {
+            virtualPortSet = new HashSet<>();
+        }
+
+        VirtualDevice virtualDevice = virtualDeviceIdVirtualDeviceMap.get(new VirtualDeviceId(networkId, deviceId));
+        checkNotNull(virtualDevice, "The virtual device has not been created for deviceId: " + deviceId);
+
+        checkState(!virtualPortExists(networkId, deviceId, portNumber), "The requested port has been added.");
+
+        VirtualPort virtualPort = new DefaultVirtualPort(networkId, virtualDevice, portNumber, phyConnectPoint);
+
+        virtualPortSet.add(virtualPort);
+
+        networkIdVirtualPortSetMap.put(networkId, virtualPortSet);
+
+        return virtualPort;
     }
+
 
     @Override
     public void removePort() {
@@ -257,6 +299,15 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     private boolean networkExists(NetworkId networkId) {
         return networkIdVirtualNetworkMap.containsKey(networkId);
+    }
+
+    private boolean virtualPortExists(NetworkId networkId, DeviceId deviceId, PortNumber portNumber) {
+        Set<VirtualPort> virtualPortSet = networkIdVirtualPortSetMap.get(networkId);
+        if (virtualPortSet != null) {
+            return virtualPortSet.stream().anyMatch(p -> p.element().id().equals(deviceId) && p.number().equals(portNumber));
+        } else {
+            return false;
+        }
     }
 
 }

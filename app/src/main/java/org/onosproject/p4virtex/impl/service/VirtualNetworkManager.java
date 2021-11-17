@@ -24,9 +24,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Implementation of the virtual network service
  */
 @Component(immediate = true, service = {
+        VirtualNetworkService.class,
         VirtualNetworkAdminService.class
 })
-public class VirtualNetworkManager implements VirtualNetworkAdminService {
+public class VirtualNetworkManager implements VirtualNetworkService, VirtualNetworkAdminService {
 
     private static final String VIRTUAL_NETWORK_MANAGEMENT_APP_NAME = "org.onosproject.vn-manager";
 
@@ -71,22 +72,22 @@ public class VirtualNetworkManager implements VirtualNetworkAdminService {
 
     @Override
     public VirtualNetwork createVirtualNetwork(TenantId tenantId) {
-        return null;
+        return store.addNetwork(tenantId);
     }
 
     @Override
     public void removeVirtualNetwork(NetworkId networkId) {
-
+        // TODO
     }
 
     @Override
     public VirtualDevice createVirtualDevice(NetworkId networkId, DeviceId deviceId) {
-        return null;
+        return store.addDevice(networkId, deviceId);
     }
 
     @Override
     public void removeVirtualDevice(NetworkId networkId, DeviceId deviceId) {
-
+        // TODO
     }
 
     @Override
@@ -111,11 +112,52 @@ public class VirtualNetworkManager implements VirtualNetworkAdminService {
 
     @Override
     public VirtualPort createVirtualPort(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, ConnectPoint phyConnectPoint) {
-        return null;
+        return store.addPort(networkId, deviceId, portNumber, phyConnectPoint);
     }
 
     @Override
     public void removeVirtualPort(NetworkId networkId, DeviceId deviceId, PortNumber portNumber) {
 
+    }
+
+    // methods of the virtual network service
+    @Override
+    public Set<VirtualNetwork> getVirtualNetworks(TenantId tenantId) {
+        return store.getNetworks(tenantId);
+    }
+
+    @Override
+    public VirtualNetwork getVirtualNetwork(NetworkId networkId) {
+        return store.getNetwork(networkId);
+    }
+
+    @Override
+    public TenantId getTenantId(NetworkId networkId) {
+        return null;
+    }
+
+    @Override
+    public Set<VirtualDevice> getVirtualDevices(NetworkId networkId) {
+        return store.getDevices(networkId);
+    }
+
+    @Override
+    public Set<VirtualHost> getVirtualHosts(NetworkId networkId) {
+        return null;
+    }
+
+    @Override
+    public Set<VirtualLink> getVirtualLinks(NetworkId networkId) {
+        return null;
+    }
+
+    @Override
+    public Set<VirtualPort> getVirtualPorts(NetworkId networkId, DeviceId deviceId) {
+        return store.getPorts(networkId, deviceId);
+    }
+
+    @Override
+    public Set<DeviceId> getPhysicalDevices(NetworkId networkId, DeviceId deviceId) {
+        return null;
     }
 }

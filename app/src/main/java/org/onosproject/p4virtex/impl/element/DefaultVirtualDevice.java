@@ -38,6 +38,11 @@ public final class DefaultVirtualDevice extends DefaultDevice implements Virtual
     }
 
     @Override
+    public DeviceId deviceId() {
+        return null;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(networkId);
     }
