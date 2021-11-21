@@ -5,6 +5,7 @@ app_name := org.onosproject.p4virtex
 oar_root := ${onos_root}/bazel-bin/apps/p4virtex/onos-apps-p4virtex-oar.oar
 netcfg_file := ${onos_root}/apps/p4virtex/netcfg.json
 http_proxy := http://192.168.12.6:7890
+srv6_p4_dir := /home/sume/projects/onos/apps/p4virtex/pipelines/srv6/src/main/resources
 
 hello:
 	$(info *** Hello world)
@@ -33,3 +34,7 @@ onos_start:
 
 netcfg:
 	${onos_curl} -X POST -H 'Content-Type:application/json' ${onos_url}/v1/network/configuration -d@${netcfg_file}
+
+compile_srv6_p4:
+	docker run --rm -it -v /home/sume/projects/onos/apps/p4virtex/pipelines/srv6/src/main/resources:/test p4lang/p4c
+	p4c --target bmv2 --arch v1model --p4runtime-files p4c-out/bmv2/srv6_p4info.txt srv6.p4

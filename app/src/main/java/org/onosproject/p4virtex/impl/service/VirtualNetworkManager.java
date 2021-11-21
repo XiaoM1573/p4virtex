@@ -120,6 +120,11 @@ public class VirtualNetworkManager implements VirtualNetworkService, VirtualNetw
 
     }
 
+    @Override
+    public void updateVirtualPortState(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, boolean isEnabled) {
+        store.updatePortState(networkId, deviceId, portNumber, isEnabled);
+    }
+
     // methods of the virtual network service
     @Override
     public Set<VirtualNetwork> getVirtualNetworks(TenantId tenantId) {

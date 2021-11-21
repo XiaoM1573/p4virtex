@@ -45,19 +45,13 @@ public interface VirtualNetworkStore {
 
     Set<VirtualLink> getLinks(NetworkId networkId);
 
-    /**
-     * Add a virtual port to the specified virtual device.
-     *
-     * @param networkId
-     * @param deviceId
-     * @param portNumber
-     * @param phyConnectPoint
-     * @return
-     */
     VirtualPort addPort(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, ConnectPoint phyConnectPoint);
-
 
     void removePort();
 
     Set<VirtualPort> getPorts(NetworkId networkId, DeviceId deviceId);
+
+    void updatePortState(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, boolean isEnabled);
+
+
 }

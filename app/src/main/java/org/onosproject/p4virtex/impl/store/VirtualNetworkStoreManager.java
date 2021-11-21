@@ -9,17 +9,12 @@ import org.onosproject.p4virtex.impl.element.DefaultVirtualDevice;
 import org.onosproject.p4virtex.impl.element.DefaultVirtualNetwork;
 import org.onosproject.p4virtex.impl.element.DefaultVirtualPort;
 import org.onosproject.p4virtex.store.VirtualNetworkStore;
-import org.onosproject.store.service.ConsistentMap;
-import org.onosproject.store.service.DistributedSet;
 import org.onosproject.store.service.StorageService;
 import org.osgi.service.component.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -52,6 +47,8 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     // some error message
     private static final String MSG_NETWORK_NOT_EXIST = "The virtual network is not existed. ";
+
+    private static final String MSG_DEVICE_EXIST = "The virtual device has already been created. ";
 
     // Track virtual network by network id
 //    private ConsistentMap<NetworkId, VirtualNetwork> networkIdVirtualNetworkConsistentMap;
@@ -89,7 +86,6 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
         networkIdDeviceIdSetMap = new HashMap<>();
 
         virtualDeviceIdVirtualDeviceMap = new HashMap<>();
-
 
         networkIdVirtualPortSetMap = new HashMap<>();
 
@@ -185,22 +181,21 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
 
     @Override
     public VirtualDevice addDevice(NetworkId networkId, DeviceId deviceId) {
-        checkState(networkExists(networkId), "The network has not been added. ");
+        checkState(networkExists(networkId), MSG_NETWORK_NOT_EXIST);
 
-        // get all device ids of the specified network id
         Set<DeviceId> deviceIdSet = networkIdDeviceIdSetMap.get(networkId);
+
         if (deviceIdSet == null) {
             deviceIdSet = new HashSet<>();
         }
 
-        checkState(!deviceIdSet.contains(deviceId), "The device already exists.");
-
-        VirtualDevice virtualDevice = new DefaultVirtualDevice(networkId, deviceId);
-        VirtualDeviceId virtualDeviceId = new VirtualDeviceId(networkId, deviceId);
+        checkState(!deviceIdSet.contains(deviceId), MSG_DEVICE_EXIST);
 
         deviceIdSet.add(deviceId);
         networkIdDeviceIdSetMap.put(networkId, deviceIdSet);
 
+        VirtualDevice virtualDevice = new DefaultVirtualDevice(networkId, deviceId);
+        VirtualDeviceId virtualDeviceId = new VirtualDeviceId(networkId, deviceId);
         virtualDeviceIdVirtualDeviceMap.put(virtualDeviceId, virtualDevice);
 
         return virtualDevice;
@@ -217,6 +212,7 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
         Set<DeviceId> deviceIdSet = networkIdDeviceIdSetMap.get(networkId);
 
         Set<VirtualDevice> virtualDeviceSet = new HashSet<>();
+
         if (deviceIdSet != null) {
             deviceIdSet.forEach(deviceId -> virtualDeviceSet.add(virtualDeviceIdVirtualDeviceMap.get(new VirtualDeviceId(networkId, deviceId))));
         }
@@ -286,6 +282,34 @@ public class VirtualNetworkStoreManager implements VirtualNetworkStore {
     @Override
     public Set<VirtualPort> getPorts(NetworkId networkId, DeviceId deviceId) {
         return null;
+    }
+
+    @Override
+    public void updatePortState(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, boolean isEnabled) {
+        checkState(networkExists(networkId), MSG_NETWORK_NOT_EXIST);
+
+        VirtualDevice device = virtualDeviceIdVirtualDeviceMap.get(new VirtualDeviceId(networkId, deviceId));
+        checkNotNull(device, "No device %s exists in virtual networkId: %s", deviceId, networkId);
+
+        Set<VirtualPort> virtualPorts = networkIdVirtualPortSetMap.get(networkId);
+        checkNotNull(virtualPorts, "No port has been added for NetworkId: %s", networkId);
+
+        Optional<VirtualPort> virtualPortOptional = virtualPorts.stream()
+                .filter(p -> p.element().id().equals(deviceId) && p.number().equals(portNumber)).findFirst();
+        checkState(virtualPortOptional.isPresent(), "The virtual port has not been added. ");
+
+        VirtualPort virtualPort = virtualPortOptional.get();
+        if (virtualPort.isEnabled() == isEnabled) {
+            log.debug("No change in port state");
+            return;
+        }
+
+        VirtualPort _virtualPort = new DefaultVirtualPort(networkId, device, portNumber, isEnabled, virtualPort.phyConnectPoint());
+        virtualPorts.remove(virtualPort);
+        virtualPorts.add(_virtualPort);
+        networkIdVirtualPortSetMap.put(networkId, virtualPorts);
+
+        log.debug("port state change from {} to {}", virtualPort.isEnabled(), isEnabled);
     }
 
     // auto generate a network id

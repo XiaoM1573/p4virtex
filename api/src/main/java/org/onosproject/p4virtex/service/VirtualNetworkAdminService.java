@@ -42,6 +42,7 @@ public interface VirtualNetworkAdminService extends VirtualNetworkService {
     void removeVirtualLink(NetworkId networkId, ConnectPoint src, ConnectPoint dst);
 
     // virtual port
+
     /**
      * @param networkId       network identifier
      * @param deviceId        virtual device identifier
@@ -52,6 +53,8 @@ public interface VirtualNetworkAdminService extends VirtualNetworkService {
     VirtualPort createVirtualPort(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, ConnectPoint phyConnectPoint);
 
     void removeVirtualPort(NetworkId networkId, DeviceId deviceId, PortNumber portNumber);
+
+    void updateVirtualPortState(NetworkId networkId, DeviceId deviceId, PortNumber portNumber, boolean isEnabled);
 
 
 }

@@ -15,6 +15,8 @@ public final class DefaultVirtualDevice extends DefaultDevice implements Virtual
 
     private final NetworkId networkId;
 
+    private final DeviceId deviceId;
+
     private static final String VIRTUAL = "virtual";
 
     private static final ProviderId providerId = new ProviderId(VIRTUAL, VIRTUAL);
@@ -31,6 +33,7 @@ public final class DefaultVirtualDevice extends DefaultDevice implements Virtual
         // optional key/value annotations
         super(providerId, deviceId, Type.VIRTUAL, VIRTUAL, VIRTUAL, VIRTUAL, VIRTUAL, new ChassisId(0));
         this.networkId = networkId;
+        this.deviceId = deviceId;
     }
 
     public NetworkId networkId() {
@@ -39,7 +42,7 @@ public final class DefaultVirtualDevice extends DefaultDevice implements Virtual
 
     @Override
     public DeviceId deviceId() {
-        return null;
+        return deviceId;
     }
 
     @Override
@@ -64,6 +67,7 @@ public final class DefaultVirtualDevice extends DefaultDevice implements Virtual
     public String toString() {
         return toStringHelper(this)
                 .add("networkId", networkId)
+                .add("deviceId", deviceId)
                 .toString();
     }
 

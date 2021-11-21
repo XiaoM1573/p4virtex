@@ -6,6 +6,7 @@ import java.util.Objects;
 
 public final class NetworkId extends Identifier<Long> {
 
+
     /**
      * Represents no virtual network, or an unspecified virtual network
      */

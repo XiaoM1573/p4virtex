@@ -26,7 +26,8 @@ public class VirtualDeviceListCommand extends AbstractShellCommand {
 
     @Override
     protected void doExecute() throws Exception {
-        getSortedVirtualDevices().forEach(this::printVirtualDevice);
+        List<VirtualDevice> devices = getSortedVirtualDevices();
+        devices.forEach(this::printVirtualDevice);
     }
 
     private List<VirtualDevice> getSortedVirtualDevices() {
