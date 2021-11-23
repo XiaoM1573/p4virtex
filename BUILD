@@ -9,8 +9,9 @@ onos_app(
     description = "Network Virtualization System On P4 Data plane",
     included_bundles = BUNDLES,
     required_apps = [
-        "org.onosproject.pipelines.basic",
+        "org.onosproject.pipelines.srv6",
         "org.onosproject.drivers.bmv2",
+        "org.onosproject.netconf",
     ],
     title = "PDP Virtualization",
     url = "http://onosproject.org",

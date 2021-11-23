@@ -4,7 +4,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50001?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 200,
         "gridY": 200
@@ -14,7 +14,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50002?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 400,
         "gridY": 200
@@ -24,7 +24,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50003?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 600,
         "gridY": 200
@@ -34,7 +34,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50004?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 200,
         "gridY": 400
@@ -44,7 +44,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50005?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 400,
         "gridY": 400
@@ -64,7 +64,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50007?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 200,
         "gridY": 600
@@ -74,7 +74,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50008?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 400,
         "gridY": 600
@@ -84,7 +84,7 @@
       "basic": {
         "managementAddress": "grpc://192.168.12.16:50009?device_id=1",
         "driver": "stratum-bmv2",
-        "pipeconf": "org.onosproject.pipelines.basic",
+        "pipeconf": "org.onosproject.pipelines.srv6",
         "locType": "grid",
         "gridX": 600,
         "gridY": 600
