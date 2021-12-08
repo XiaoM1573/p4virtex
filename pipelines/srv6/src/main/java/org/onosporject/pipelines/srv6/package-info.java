@@ -1,1 +1,0 @@
-package org.onosporject.pipelines.srv6;
